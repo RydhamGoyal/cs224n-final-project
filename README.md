@@ -1,6 +1,8 @@
 # GPT-2 Fine-Tuning, LoRA, and DPO for Paraphrase Detection and Sonnet Generation
 
-This repository is a cleaned portfolio copy of a Stanford CS224N default final project completed with Megha Bindiganavale. The starter project focused on implementing GPT-2 and applying it to two downstream tasks: Quora paraphrase detection and Shakespeare sonnet generation. Our main extensions were parameter-efficient fine-tuning with LoRA, decoding experiments for generation, and Direct Preference Optimization (DPO) for both classification and generation.
+Fine-tuning all the parameters of a large language model works well but is expensive. LoRA (Low-Rank Adaptation) offers a cheaper alternative by only training small low-rank matrices while keeping the rest of the model frozen. We study how LoRA compares to full fine-tuning on GPT-2 (124M parameters) on two tasks: paraphrase detection (a classification task) and sonnet generation (an open-ended generation task). We implement LoRA from scratch, adding trainable low-rank matrices to the query and value projections in each attention layer. For paraphrase detection, LoRA with just 147K trainable parameters (0.12% of the model) reaches 85.9% dev accuracy versus 88.7% for full fine-tuning, a gap of only 2.8 points. For sonnet generation, however, LoRA performs much worse: its outputs are often incoherent, scoring 17.7 chrF compared to 25.8 in our initial full fine-tuning setup, and increasing the rank from 1 to 16 does not materially improve generation quality. We further study decoding and preference-based post-training for sonnet generation. Nucleus sampling substantially outperforms beam search, and Direct Preference Optimization (DPO) provides an additional improvement on top of supervised fine-tuning, raising dev chrF from 41.5 to 42.0. Our error analysis shows that LoRA's paraphrase mistakes concentrate on high-overlap sentence pairs, while its sonnet failures stem from an inability to shift the output distribution enough toward Shakespearean language.
+
+Report: [CS224N Final Report](https://drive.google.com/file/d/1Gfw7L5mWUlWWDuI8vb7QC9cu2pHfbfyX/view?usp=sharing)
 
 ## What We Built
 
@@ -58,12 +60,6 @@ python dpo_paraphrase.py --use_gpu --epochs 10
 # DPO for sonnet generation (best setup)
 python dpo_sonnet.py --use_gpu --ckpt_base 9_10-1e-05-sonnet.pt --epochs 5 --beta 0.15 --batch_size 2
 ```
-
-## Notes
-
-- This repo is intended as a portfolio/project showcase rather than a submission mirror.
-- Large datasets, checkpoints, and generated submission archives are not tracked in this version.
-- The original work was completed collaboratively; this copy is published separately with my teammate's approval.
 
 ## Attribution
 
